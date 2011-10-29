@@ -38,6 +38,10 @@ module Mongoid
     attr_accessor :_process_list_change
 
 
+    def position_scope
+      fields["position"].options[:scope]
+    end
+
   private
 
 

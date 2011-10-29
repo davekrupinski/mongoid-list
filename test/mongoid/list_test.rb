@@ -302,5 +302,38 @@ describe Mongoid::List do
     end
   end
 
+
+
+  context "#position_scope" do
+
+
+    context "for Simple (unscoped)" do
+
+      let(:obj) do
+        Simple.new
+      end
+
+      should "be nil" do
+        assert_nil obj.position_scope 
+      end
+
+    end
+
+
+    context "for Scoped" do
+
+      let(:obj) do
+        Scoped.new
+      end
+
+      should "be :group" do
+        assert_equal :group, obj.position_scope
+      end
+
+    end
+
+  end
+
+
 end
 
