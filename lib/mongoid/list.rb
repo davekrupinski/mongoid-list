@@ -25,7 +25,7 @@ module Mongoid
     module ClassMethods
 
       def update_positions_in_list!(elements)
-        return false if elements.size < self.count
+        return false if elements.size < count
         elements.each_with_index do |element, idx|
           id = element.kind_of?(Hash) ? element['id'] : element
           self.collection.update({ id: id }, { '$set' => { position: (idx + 1) } })
@@ -66,8 +66,9 @@ module Mongoid
     end
 
     def update_positions_in_collection_list!
-       self.class.collection.update(
-        { _id:  { '$ne' => id }, position: { '$lte' => _process_list_change[:max], '$gte' => _process_list_change[:min] }.delete_if { |k, v| v.nil? } },
+      position = { '$lte' => _process_list_change[:max], '$gte' => _process_list_change[:min] }.delete_if { |k, v| v.nil? }
+      self.class.collection.update(
+        { _id:  { '$ne' => id }, position: position },
         { '$inc' => { position: _process_list_change[:by] } },
         multi: true
       )
@@ -100,7 +101,5 @@ module Mongoid
     end
 
   end
-
-
 
 end
