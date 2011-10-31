@@ -40,11 +40,6 @@ module Mongoid
     attr_accessor :_process_list_change
 
 
-    def list_scoped?
-      fields["position"].options.has_key?(:scope)
-    end
-
-
   private
 
 
@@ -84,13 +79,15 @@ module Mongoid
 
     def update_positions_in_embedded_list!
       _embedded_list_container.send(metadata.name.to_sym).each do |list_item|
+        # TODO: This includes duplicate logic from :list_scope_conditions
         next if list_item == self ||
                 (_process_list_change[:min].present? && list_item.position < _process_list_change[:min]) ||
-                (_process_list_change[:max].present? && list_item.position > _process_list_change[:max])
+                (_process_list_change[:max].present? && list_item.position > _process_list_change[:max]) ||
+                (list_scoped? && list_item.list_scope_value != list_scope_value)
 
-        selector  = { "#{metadata.name.to_sym}._id" => list_item.id }
+        criteria  = { "#{metadata.name.to_sym}._id" => list_item.id }
         changes   = { '$inc' => { "#{metadata.name.to_sym}.$.position" => _process_list_change[:by] } }
-        _embedded_list_container.class.collection.update(selector, changes)
+        _embedded_list_container.class.collection.update(criteria, changes)
       end
     end
 
