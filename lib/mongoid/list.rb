@@ -49,7 +49,7 @@ module Mongoid
 
 
     def set_initial_position_in_list
-      self.position = current_maximum_position_in_collection + 1
+      self.position = current_list_maximum_position + 1
     end
 
     def mark_for_update_processing_of_list
@@ -74,9 +74,9 @@ module Mongoid
 
     def update_positions_in_collection_list!
       position = { '$lte' => _process_list_change[:max], '$gte' => _process_list_change[:min] }.delete_if { |k, v| v.nil? }
-      conditions = list_scope_conditions.merge({ _id:  { '$ne' => id }, position: position })
+      criteria = list_scope_conditions.merge({ _id:  { '$ne' => id }, position: position })
       self.class.collection.update(
-        conditions,
+        criteria,
         { '$inc' => { position: _process_list_change[:by] } },
         multi: true
       )
@@ -84,19 +84,19 @@ module Mongoid
 
     def update_positions_in_embedded_list!
       _embedded_list_container.send(metadata.name.to_sym).each do |list_item|
-        next if list_item == self || \
-                (_process_list_change[:min].present? && list_item.position < _process_list_change[:min]) || \
+        next if list_item == self ||
+                (_process_list_change[:min].present? && list_item.position < _process_list_change[:min]) ||
                 (_process_list_change[:max].present? && list_item.position > _process_list_change[:max])
-        _embedded_list_container.class.collection.update(
-          { "#{metadata.name.to_sym}._id" => list_item.id },
-          { '$inc' => { "#{metadata.name.to_sym}.$.position" => _process_list_change[:by] } }
-        )
+
+        selector  = { "#{metadata.name.to_sym}._id" => list_item.id }
+        changes   = { '$inc' => { "#{metadata.name.to_sym}.$.position" => _process_list_change[:by] } }
+        _embedded_list_container.class.collection.update(selector, changes)
       end
     end
 
-    def current_maximum_position_in_collection
-      if embedded? 
-        _embedded_list_container.send(metadata.name.to_sym)
+    def current_list_maximum_position
+      if embedded?
+        _embedded_list_container.send(metadata.name.to_sym).excludes(_id: id)
       else
         self.class
       end.where(list_scope_conditions).count
