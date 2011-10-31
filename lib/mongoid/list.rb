@@ -7,6 +7,9 @@ module Mongoid
     extend ActiveSupport::Concern
     include Mongoid::List::Scoping
 
+    autoload :Collection, 'mongoid/list/collection'
+    autoload :Embedded,   'mongoid/list/embedded'
+
     included do
       field :position, type: Integer
 
@@ -44,7 +47,7 @@ module Mongoid
 
 
     def set_initial_position_in_list
-      self.position = current_list_maximum_position + 1
+      self.position = list_count + 1
     end
 
     def mark_for_update_processing_of_list
@@ -64,46 +67,13 @@ module Mongoid
     end
 
     def update_positions_in_list!
-      embedded? ? update_positions_in_embedded_list! : update_positions_in_collection_list!
+      embedded? ? Embedded.new(self).update_positions! : Collection.new(self).update_positions!
     end
 
-    def update_positions_in_collection_list!
-      position = { '$lte' => _process_list_change[:max], '$gte' => _process_list_change[:min] }.delete_if { |k, v| v.nil? }
-      criteria = list_scope_conditions.merge({ _id:  { '$ne' => id }, position: position })
-      self.class.collection.update(
-        criteria,
-        { '$inc' => { position: _process_list_change[:by] } },
-        multi: true
-      )
+    def list_count
+      embedded? ? Embedded.new(self).count : Collection.new(self).count
     end
 
-    def update_positions_in_embedded_list!
-      _embedded_list_container.send(metadata.name.to_sym).each do |list_item|
-        # TODO: This includes duplicate logic from :list_scope_conditions
-        next if list_item == self ||
-                (_process_list_change[:min].present? && list_item.position < _process_list_change[:min]) ||
-                (_process_list_change[:max].present? && list_item.position > _process_list_change[:max]) ||
-                (list_scoped? && list_item.list_scope_value != list_scope_value)
-
-        criteria  = { "#{metadata.name.to_sym}._id" => list_item.id }
-        changes   = { '$inc' => { "#{metadata.name.to_sym}.$.position" => _process_list_change[:by] } }
-        _embedded_list_container.class.collection.update(criteria, changes)
-      end
-    end
-
-    def current_list_maximum_position
-      if embedded?
-        _embedded_list_container.send(metadata.name.to_sym).excludes(_id: id)
-      else
-        self.class
-      end.where(list_scope_conditions).count
-    end
-
-    def _embedded_list_container
-      # TODO: MONGOID: Mongoid is not currently setting up the metadata properly so we have to do some extra
-      # work with getting the values we need out of the partial information.
-      self.send(metadata.inverse_setter.sub('=', '').to_sym)
-    end
 
   end
 
