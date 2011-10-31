@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'mongoid-list'
-  s.version       = '0.1.0'
+  s.version       = '0.1.1'
   s.date          = '2011-10-28'
   s.authors       = [ 'Dave Krupinski' ]
   s.email         = 'dave@davekrupinski.com'
