@@ -116,7 +116,7 @@ describe Mongoid::List::Scoping do
 
 
 
-  describe "Updating Position" do
+  describe "#update :position" do
 
     context "for Collection List" do
 
@@ -208,22 +208,22 @@ describe Mongoid::List::Scoping do
 
         should "update @group1_2's :position to 1" do
           assert_equal 2, @group1_2.position
-          assert_equal 1, @container.reload.scoped_items.find(@group1_2.id).position
+          assert_equal 1, @group1_2.reload.position
         end
 
         should "not update @group2_1's :position" do
           assert_equal 1, @group2_1.position
-          assert_equal 1, @container.reload.scoped_items.find(@group2_1.id).position
+          assert_equal 1, @group2_1.reload.position
         end
 
         should "not update @group2_2's :position" do
           assert_equal 2, @group2_2.position
-          assert_equal 2, @container.reload.scoped_items.find(@group2_2.id).position
+          assert_equal 2, @group2_2.reload.position
         end
 
         should "not update @group2_3's :position" do
           assert_equal 3, @group2_3.position
-          assert_equal 3, @container.reload.scoped_items.find(@group2_3.id).position
+          assert_equal 3, @group2_3.reload.position
         end
       end
 
@@ -236,27 +236,27 @@ describe Mongoid::List::Scoping do
 
         should "not update @group1_1's :position" do
           assert_equal 1, @group1_1.position
-          assert_equal 1, @container.reload.scoped_items.find(@group1_1.id).position
+          assert_equal 1, @group1_1.reload.position
         end
 
         should "not update @group1_2's :position" do
           assert_equal 2, @group1_2.position
-          assert_equal 2, @container.reload.scoped_items.find(@group1_2.id).position
+          assert_equal 2, @group1_2.reload.position
         end
 
         should "update @group2_1's :position to 2" do
           assert_equal 1, @group2_1.position
-          assert_equal 2, @container.reload.scoped_items.find(@group2_1.id).position
+          assert_equal 2, @group2_1.reload.position
         end
 
         should "update @group2_2's :position to 3" do
           assert_equal 2, @group2_2.position
-          assert_equal 3, @container.reload.scoped_items.find(@group2_2.id).position
+          assert_equal 3, @group2_2.reload.position
         end
 
         should "update @group2_3's :position to 1" do
           assert_equal 1, @group2_3.position
-          assert_equal 1, @container.reload.scoped_items.find(@group2_3.id).position
+          assert_equal 1, @group2_3.reload.position
         end
       end
 
@@ -265,5 +265,90 @@ describe Mongoid::List::Scoping do
   end
 
 
+
+  describe "#destroy" do
+
+    context "from a Collection" do
+
+      setup do
+        @group1_1 = Scoped.create(group: 1)
+        @group1_2 = Scoped.create(group: 1)
+        @group2_1 = Scoped.create(group: 2)
+        @group2_2 = Scoped.create(group: 2)
+        @group2_3 = Scoped.create(group: 2)
+      end
+
+      context "for @group2_1" do
+
+        setup do
+          @group2_1.destroy
+        end
+
+        should "not update @group1_1's :position" do
+          assert_equal 1, @group1_1.position
+          assert_equal 1, @group1_1.reload.position
+        end
+
+        should "not update @group1_2's :position" do
+          assert_equal 2, @group1_2.position
+          assert_equal 2, @group1_2.reload.position
+        end
+
+        should "update @group2_2's :position to 1" do
+          assert_equal 2, @group2_2.position
+          assert_equal 1, @group2_2.reload.position
+        end
+
+        should "update @group2_3's :position to 2" do
+          assert_equal 3, @group2_3.position
+          assert_equal 2, @group2_3.reload.position
+        end
+      end
+
+    end
+
+
+    context "from an Embedded Collection" do
+
+      setup do
+        @container = Container.create
+        @group1_1 = @container.scoped_items.create(group: 1)
+        @group1_2 = @container.scoped_items.create(group: 1)
+        @group2_1 = @container.scoped_items.create(group: 2)
+        @group2_2 = @container.scoped_items.create(group: 2)
+        @group2_3 = @container.scoped_items.create(group: 2)
+      end
+
+      context "for @group2_2" do
+
+        setup do
+          @group2_2.destroy
+        end
+
+        should "not update @group1_1's :position" do
+          assert_equal 1, @group1_1.position
+          assert_equal 1, @group1_1.reload.position
+        end
+
+        should "not update @group1_2's :position" do
+          assert_equal 2, @group1_2.position
+          assert_equal 2, @group1_2.reload.position
+        end
+
+        should "not update @group2_1's :position" do
+          assert_equal 1, @group2_1.position
+          assert_equal 1, @group2_1.reload.position
+        end
+
+        should "update @group2_3's :position to 2" do
+          assert_equal 3, @group2_3.position
+          assert_equal 2, @container.reload.scoped_items.find(@group2_3.id).position
+        end
+      end
+
+    end
+
+
+  end
 
 end
