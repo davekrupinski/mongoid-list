@@ -1,9 +1,11 @@
+require 'mongoid/list/scoping'
+
 module Mongoid
 
 
   module List
     extend ActiveSupport::Concern
-
+    include Mongoid::List::Scoping
 
     included do
       field :position, type: Integer
@@ -38,9 +40,10 @@ module Mongoid
     attr_accessor :_process_list_change
 
 
-    def position_scope
-      fields["position"].options[:scope]
+    def list_scoped?
+      fields["position"].options.has_key?(:scope)
     end
+
 
   private
 
@@ -71,8 +74,9 @@ module Mongoid
 
     def update_positions_in_collection_list!
       position = { '$lte' => _process_list_change[:max], '$gte' => _process_list_change[:min] }.delete_if { |k, v| v.nil? }
+      conditions = list_scope_conditions.merge({ _id:  { '$ne' => id }, position: position })
       self.class.collection.update(
-        { _id:  { '$ne' => id }, position: position },
+        conditions,
         { '$inc' => { position: _process_list_change[:by] } },
         multi: true
       )
@@ -95,7 +99,7 @@ module Mongoid
         _embedded_list_container.send(metadata.name.to_sym)
       else
         self.class
-      end.count
+      end.where(list_scope_conditions).count
     end
 
     def _embedded_list_container

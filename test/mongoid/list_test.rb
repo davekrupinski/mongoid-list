@@ -304,7 +304,7 @@ describe Mongoid::List do
 
 
 
-  context "#position_scope" do
+  context "#list_scoped?" do
 
 
     context "for Simple (unscoped)" do
@@ -314,7 +314,7 @@ describe Mongoid::List do
       end
 
       should "be nil" do
-        assert_nil obj.position_scope 
+        assert !obj.list_scoped? 
       end
 
     end
@@ -327,7 +327,7 @@ describe Mongoid::List do
       end
 
       should "be :group" do
-        assert_equal :group, obj.position_scope
+        assert obj.list_scoped?
       end
 
     end
