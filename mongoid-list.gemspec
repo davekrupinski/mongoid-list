@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.authors       = [ 'Dave Krupinski' ]
   s.email         = 'dave@davekrupinski.com'
   s.summary       = 'Simple list behavior for Mongoid'
+  s.homepage      = 'https://github.com/davekrupinski/mongoid-list'
 
   s.add_dependency('mongoid', [ '>= 2.0.0' ])
 
