@@ -3,11 +3,9 @@ gem 'minitest'
 require 'mini_shoulda'
 require 'minitest/autorun'
 require 'turn'
-require 'rubygems'
 require 'spork'
-
 require 'mongoid'
-require 'mongoid/list'
+require 'mongoid-list'
 
 Mongoid.configure do |config|
   database = Mongo::Connection.new.db("mongoid-list_test")

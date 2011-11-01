@@ -1,6 +1,12 @@
+# -*- encoding: utf-8 -*-
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require "mongoid/list/version"
+
 Gem::Specification.new do |s|
   s.name          = 'mongoid-list'
-  s.version       = '0.1.1'
+  s.version       = Mongoid::List::VERSION
   s.date          = '2011-10-28'
   s.authors       = [ 'Dave Krupinski' ]
   s.email         = 'dave@davekrupinski.com'
@@ -17,6 +23,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency('guard-spork', [ '>= 0.3.1' ])
   s.add_development_dependency('turn', [ '>= 0.8.3' ])
 
-  s.files         = Dir.glob("lib/**/*") + %w(LICENSE README.md)
-  s.require_path  = 'lib'
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
+
 end

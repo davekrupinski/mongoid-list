@@ -1,7 +1,6 @@
 module Mongoid
   module List
     module Scoping
-      extend ActiveSupport::Concern
 
       def list_scoped?
         fields["position"].options.has_key?(:scope)

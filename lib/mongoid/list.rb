@@ -1,4 +1,4 @@
-require 'mongoid/list/scoping'
+require "mongoid/list/scoping"
 
 module Mongoid
 
