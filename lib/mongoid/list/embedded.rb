@@ -1,24 +1,20 @@
+require 'mongoid/list/abstract'
+
 module Mongoid
   module List
-    class Embedded
-
-      attr_accessor :obj
-
-      def initialize(obj)
-        @obj = obj
-      end
+    class Embedded < Abstract
 
       def update_positions!
         items.each do |item|
           next unless should_operate_on_item?(item)
-          criteria  = { "#{obj.metadata.name.to_sym}._id" => item.id }
-          changes   = { '$inc' => { "#{obj.metadata.name.to_sym}.$.position" => obj._process_list_change[:by] } }
-          _embedded_list_container.class.collection.update(criteria, changes)
+          criteria  = { "#{relation_name}._id" => item.id }
+          updates   = { '$inc' => { "#{relation_name}.$.position" => changes[:by] } }
+          container.class.collection.update(criteria, updates)
         end
       end
 
       def count
-        _embedded_list_container.send(obj.metadata.name.to_sym).excludes(_id: obj.id).where(obj.list_scope_conditions).count
+        items.excludes(_id: obj.id).where(conditions).count
       end
 
 
@@ -26,23 +22,27 @@ module Mongoid
 
 
       def items
-        _embedded_list_container.send(obj.metadata.name.to_sym)
+        container.send(relation_name)
       end
 
       def should_operate_on_item?(item)
         # TODO: This includes duplicate logic from :list_scope_conditions
         ![
           item == obj,
-          obj._process_list_change[:min].present? && item.position < obj._process_list_change[:min],
-          obj._process_list_change[:max].present? && item.position > obj._process_list_change[:max],
+          changes[:min].present? && item.position < changes[:min],
+          changes[:max].present? && item.position > changes[:max],
           obj.list_scoped? && item.list_scope_value != obj.list_scope_value
         ].any?
       end
 
-      def _embedded_list_container
+      def container
         # TODO: MONGOID: Mongoid is not currently setting up the metadata properly so we have to do some extra
         # work with getting the values we need out of the partial information.
         obj.send(obj.metadata.inverse_setter.sub('=', '').to_sym)
+      end
+
+      def relation_name
+        obj.metadata.name.to_sym
       end
 
 

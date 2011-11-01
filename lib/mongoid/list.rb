@@ -1,11 +1,8 @@
-require "mongoid/list/scoping"
-
 module Mongoid
 
 
   module List
     extend ActiveSupport::Concern
-    include Mongoid::List::Scoping
 
     autoload :Collection, 'mongoid/list/collection'
     autoload :Embedded,   'mongoid/list/embedded'
@@ -43,6 +40,23 @@ module Mongoid
     attr_accessor :_process_list_change
 
 
+    def list_scoped?
+      fields["position"].options.has_key?(:scope)
+    end
+
+    def list_scope_field
+      fields["position"].options[:scope]
+    end
+
+    def list_scope_value
+      public_send(list_scope_field)
+    end
+
+    def list_scope_conditions
+      list_scoped? ? { list_scope_field.to_sym => list_scope_value } : {}
+    end
+
+
   private
 
 
@@ -73,7 +87,6 @@ module Mongoid
     def list_count
       embedded? ? Embedded.new(self).count : Collection.new(self).count
     end
-
 
   end
 
