@@ -7,18 +7,9 @@ module Mongoid
       class << self
 
         def update_positions!(klass, elements)
-          load_list_elements(klass, elements).each_with_index do |element, idx|
-            klass.collection.update({ _id: element.id }, { '$set' => { position: (idx + 1) } })
-          end
-          # return false if elements.size < klass.count
-        end
-
-      private
-
-        def load_list_elements(klass, elements)
-          elements.collect do |element|
+          elements.each_with_index do |element, idx|
             id = element.kind_of?(Hash) ? element['id'] : element
-            klass.find(id)
+            klass.collection.update({ _id: id }, { '$set' => { position: (idx + 1) } })
           end
         end
 
