@@ -4,6 +4,29 @@ module Mongoid
   module List
     class Embedded < Abstract
 
+      class << self
+
+        def update_positions!(binding, elements)
+          load_list_elements(binding, elements).each_with_index do |element, idx|
+            binding.base.collection.update(
+              { "#{binding.metadata.key}._id" => element.id },
+              { "$set" => { "#{binding.metadata.key}.$.position" => (idx+1) } }
+            )
+          end
+        end
+
+      private
+
+        def load_list_elements(binding, elements)
+          elements.collect do |element|
+            id = element.kind_of?(Hash) ? element['id'] : element
+            binding.base.send(binding.metadata.key).find(id)
+          end
+        end
+
+      end
+
+
       def update_positions!
         items.each do |item|
           next unless should_operate_on_item?(item)

@@ -683,6 +683,59 @@ describe Mongoid::List do
 
     end
 
+  end
+
+
+
+  describe "#update_positions_in_list!" do
+
+    context "on a Collection" do
+
+      setup do
+        @obj1 = Simple.create
+        @obj2 = Simple.create
+        @obj3 = Simple.create
+        Simple.update_positions_in_list!([ @obj2.id, @obj1.id, @obj3.id ])
+      end
+
+      should "change @obj1 from :position of 1 to 2" do
+        assert_equal 1, @obj1.position
+        assert_equal 2, @obj1.reload.position
+      end
+
+      should "change @obj2 from :position of 2 to 1" do
+        assert_equal 2, @obj2.position
+        assert_equal 1, @obj2.reload.position
+      end
+
+      should "not change @obj3 from :position of 3" do
+        assert_equal 3, @obj3.position
+        assert_equal 3, @obj3.reload.position
+      end
+
+    end
+
+    context "on an Embedded Collection" do
+
+      let :container do
+        Container.create!
+      end
+
+      setup do
+        @obj1 = container.items.create!
+        @obj2 = container.items.create!
+        @obj3 = container.items.create!
+        @obj4 = container.items.create!
+        container.items.update_positions_in_list!([ @obj2.id, @obj1.id, @obj4.id, @obj3.id ])
+      end
+
+      should "change @obj1 from :position of 1 to 2" do
+        assert_equal 1, @obj1.position
+        assert_equal 2, @obj1.reload.position
+      end
+
+    end
 
   end
+
 end

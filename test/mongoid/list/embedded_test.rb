@@ -104,4 +104,71 @@ describe Mongoid::List::Embedded do
   end
 
 
+  describe "#update_positions_in_list!" do
+
+    let :container do
+      Container.create!
+    end
+
+    context "unscoped" do
+
+      setup do
+        @obj1 = container.items.create!
+        @obj2 = container.items.create!
+        @obj3 = container.items.create!
+        container.items.update_positions_in_list!([ @obj2.id, @obj1.id, @obj3.id ])
+      end
+
+      should "change @obj1 from :position of 1 to 2" do
+        assert_equal 1, @obj1.position
+        assert_equal 2, @obj1.reload.position
+      end
+
+      should "change @obj2 from :position of 2 to 1" do
+        assert_equal 2, @obj2.position
+        assert_equal 1, @obj2.reload.position
+      end
+
+      should "not change @obj3 from :position of 3" do
+        assert_equal 3, @obj3.position
+        assert_equal 3, @obj3.reload.position
+      end
+
+    end
+
+    context "scoped" do
+
+      setup do
+        @obj1 = container.scoped_items.create!(group: "hell's angels")
+        @obj2 = container.scoped_items.create!(group: "hell's angels")
+        @obj3 = container.scoped_items.create!(group: "hell's angels")
+        @other = container.scoped_items.create!(group: "charlie's angels")
+
+        container.scoped_items.update_positions_in_list!([ @obj3.id, @obj2.id, @obj1.id ])
+      end
+
+      should "change @obj1 from :position of 1 to 3" do
+        assert_equal 1, @obj1.position
+        assert_equal 3, @obj1.reload.position
+      end
+
+      should "not change @obj2 from :position of 2" do
+        assert_equal 2, @obj2.position
+        assert_equal 2, @obj2.reload.position
+      end
+
+      should "change @obj3 from :position of 3 to 1" do
+        assert_equal 3, @obj3.position
+        assert_equal 1, @obj3.reload.position
+      end
+
+      should "not have touched @other scoped" do
+        assert_equal 1, @other.position
+        assert_equal 1, @other.reload.position
+      end
+
+    end
+
+  end
+
 end

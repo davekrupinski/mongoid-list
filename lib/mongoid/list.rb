@@ -26,12 +26,8 @@ module Mongoid
 
     module ClassMethods
 
-      def update_positions_in_list!(elements)
-        return false if elements.size < count
-        elements.each_with_index do |element, idx|
-          id = element.kind_of?(Hash) ? element['id'] : element
-          self.collection.update({ id: id }, { '$set' => { position: (idx + 1) } })
-        end
+      def update_positions_in_list!(elements, binding=nil)
+        embedded? ? Embedded.update_positions!(binding, elements) : Collection.update_positions!(self, elements)
       end
 
     end
