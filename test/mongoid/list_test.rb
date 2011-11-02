@@ -734,6 +734,21 @@ describe Mongoid::List do
         assert_equal 2, @obj1.reload.position
       end
 
+      should "change @obj2 from :position of 2 to 1" do
+        assert_equal 2, @obj2.position
+        assert_equal 1, @obj2.reload.position
+      end
+
+      should "change @obj3 from :position of 3 to 4" do
+        assert_equal 3, @obj3.position
+        assert_equal 4, @obj3.reload.position
+      end
+
+      should "change @obj4 from :position of 4 to 3" do
+        assert_equal 4, @obj4.position
+        assert_equal 3, @obj4.reload.position
+      end
+
     end
 
   end
