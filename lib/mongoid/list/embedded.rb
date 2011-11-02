@@ -8,9 +8,9 @@ module Mongoid
 
         def update_positions!(binding, elements)
           load_list_elements(binding, elements).each_with_index do |element, idx|
-            binding.base.collection.update(
-              { "#{binding.metadata.key}._id" => element.id },
-              { "$set" => { "#{binding.metadata.key}.$.position" => (idx+1) } }
+            (binding.base._parent || binding.base).collection.update(
+              element.atomic_selector,
+              { "$set" => { "#{element.atomic_path}.$.position" => (idx+1) } }
             )
           end
         end
@@ -30,9 +30,9 @@ module Mongoid
       def update_positions!
         items.each do |item|
           next unless should_operate_on_item?(item)
-          criteria  = { "#{relation_name}._id" => item.id }
-          updates   = { '$inc' => { "#{relation_name}.$.position" => changes[:by] } }
-          container.class.collection.update(criteria, updates)
+          criteria  = item.atomic_selector
+          updates   = { '$inc' => { "#{item.atomic_path}.$.position" => changes[:by] } }
+          item._parent.class.collection.update(criteria, updates)
         end
       end
 

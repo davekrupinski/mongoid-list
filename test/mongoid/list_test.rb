@@ -282,10 +282,14 @@ describe Mongoid::List do
         assert_equal 1, @container.items.find(@list1.id).position
       end
 
-      should "have moved lower items up" do
+      should "have moved @list3 up to :position 2" do
         assert_equal 2, @container.items.find(@list3.id).position
+      end
+
+      should "have moved @list4 up to :position 3" do
         assert_equal 3, @container.items.find(@list4.id).position
       end
+
     end
 
     context "removing from the 4th and last position" do
@@ -751,6 +755,47 @@ describe Mongoid::List do
 
     end
 
+    context "on a Deeply Embedded Collection" do
+
+      let :root do
+        Container.create!
+      end
+
+      let :embedded do
+        root.items.create!
+      end
+
+      setup do
+        @obj1 = embedded.items.create!
+        @obj2 = embedded.items.create!
+        @obj3 = embedded.items.create!
+        @obj4 = embedded.items.create!
+        embedded.items.update_positions_in_list!([ @obj3.id, @obj4.id, @obj1.id, @obj2.id ])
+      end
+
+      should "change @obj1 from :position of 1 to 3" do
+        assert_equal 1, @obj1.position
+        assert_equal 3, @obj1.reload.position
+      end
+
+      should "change @obj2 from :position of 2 to 4" do
+        assert_equal 2, @obj2.position
+        assert_equal 4, @obj2.reload.position
+      end
+
+      should "change @obj3 from :position of 3 to 1" do
+        assert_equal 3, @obj3.position
+        assert_equal 1, @obj3.reload.position
+      end
+
+      should "change @obj4 from :position of 4 to 2" do
+        assert_equal 4, @obj4.position
+        assert_equal 2, @obj4.reload.position
+      end
+
+    end
+
   end
+
 
 end
