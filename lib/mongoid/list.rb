@@ -1,7 +1,7 @@
 module Mongoid
 
-
   module List
+
     extend ActiveSupport::Concern
 
     autoload :Collection, 'mongoid/list/collection'
@@ -11,8 +11,6 @@ module Mongoid
       field :position, type: Integer
 
       validates :position, numericality: true, on: :update
-
-      index [ include?(Mongoid::Paranoia) ? [ :deleted_at, 1 ] : nil, [ :position, -1 ] ].compact # TODO: MONGOID: Apply a patch
 
       before_create  :set_initial_position_in_list
       before_update  :mark_for_update_processing_of_list, if: :position_changed?
