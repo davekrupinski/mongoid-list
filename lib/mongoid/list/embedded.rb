@@ -32,7 +32,7 @@ module Mongoid
           next unless should_operate_on_item?(item)
           criteria  = item.atomic_selector
           updates   = { '$inc' => { "#{item.atomic_path}.$.position" => changes[:by] } }
-          item._parent.class.collection.update(criteria, updates)
+          item._root.class.collection.update(criteria, updates)
         end
       end
 

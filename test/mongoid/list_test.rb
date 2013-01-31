@@ -3,7 +3,6 @@ require 'test_helper'
 
 describe Mongoid::List do
 
-
   context "Setting Initial Position" do
     setup do
       @list1 = Simple.create
@@ -49,6 +48,7 @@ describe Mongoid::List do
 
 
   context "Updating List Position" do
+
     setup do
       @list1 = Simple.create
       @list2 = Simple.create
@@ -64,6 +64,7 @@ describe Mongoid::List do
     end
 
     context "for @list2 going to position of 1" do
+
       setup do
         @list2.update_attributes(:position => 1)
         @list1.reload; @list2.reload; @list3.reload; @list4.reload
@@ -78,6 +79,7 @@ describe Mongoid::List do
     end
 
     context "for @list3 going to position of 1" do
+
       setup do
         @list3.update_attributes(:position => 1)
         @list1.reload; @list2.reload; @list3.reload; @list4.reload
@@ -89,9 +91,11 @@ describe Mongoid::List do
         assert_equal 1, @list3.position
         assert_equal 4, @list4.position
       end
+
     end
 
     context "for @list1 going to position of 2" do
+
       setup do
         @list1.update_attributes(:position => 2)
         @list1.reload; @list2.reload; @list3.reload; @list4.reload
@@ -103,9 +107,11 @@ describe Mongoid::List do
         assert_equal 3, @list3.position
         assert_equal 4, @list4.position
       end
+
     end
 
     context "for @list1 going to position of 3" do
+
       setup do
         @list1.update_attributes(:position => 3)
         @list1.reload; @list2.reload; @list3.reload; @list4.reload
@@ -117,12 +123,15 @@ describe Mongoid::List do
         assert_equal 2, @list3.position
         assert_equal 4, @list4.position
       end
+
     end
+
   end
 
 
 
   context "Updating List Position in Embedded Collection" do
+
     setup do
       @container = Container.create
       @list1 = @container.items.create
@@ -139,6 +148,7 @@ describe Mongoid::List do
     end
 
     context "for @list2 going to position of 1" do
+
       setup do
         @list2.update_attributes(:position => 1)
         @container.reload
@@ -150,9 +160,11 @@ describe Mongoid::List do
         assert_equal 3, @container.items.find(@list3.id).position
         assert_equal 4, @container.items.find(@list4.id).position
       end
+
     end
 
     context "for @list3 going to position of 1" do
+
       setup do
         @list3.update_attributes(:position => 1)
         @container.reload
@@ -164,9 +176,11 @@ describe Mongoid::List do
         assert_equal 1, @container.items.find(@list3.id).position
         assert_equal 4, @container.items.find(@list4.id).position
       end
+
     end
 
     context "for @list1 going to position of 2" do
+
       setup do
         @list1.update_attributes(:position => 2)
         @container.reload
@@ -178,9 +192,11 @@ describe Mongoid::List do
         assert_equal 3, @container.items.find(@list3.id).position
         assert_equal 4, @container.items.find(@list4.id).position
       end
+
     end
 
     context "for @list1 going to position of 3" do
+
       setup do
         @list1.update_attributes(:position => 3)
         @container.reload
@@ -192,12 +208,15 @@ describe Mongoid::List do
         assert_equal 2, @container.items.find(@list3.id).position
         assert_equal 4, @container.items.find(@list4.id).position
       end
+
     end
+
   end
 
 
 
-  context "Removing an Item from a List" do
+  context "#destroy" do
+
     setup do
       @list1 = Simple.create
       @list2 = Simple.create
@@ -232,9 +251,11 @@ describe Mongoid::List do
         assert_equal 2, @list3.position
         assert_equal 3, @list4.position
       end
+
     end
 
     context "removing from the 4th and last position" do
+
       setup do
         @list4.destroy
         @list1.reload; @list2.reload; @list3.reload
@@ -245,12 +266,14 @@ describe Mongoid::List do
         assert_equal 2, @list2.position
         assert_equal 3, @list3.position
       end
+
     end
   end
 
 
 
-  context "Removing an Item from an Embedded List" do
+  context "#destroy Item from an Embedded List" do
+
     setup do
       @container = Container.create
       @list1 = @container.items.create
@@ -260,6 +283,7 @@ describe Mongoid::List do
     end
 
     context "from the first position" do
+
       setup do
         @list1.destroy
         @container.reload
@@ -270,9 +294,11 @@ describe Mongoid::List do
         assert_equal 2, @container.items.find(@list3.id).position
         assert_equal 3, @container.items.find(@list4.id).position
       end
+
     end
 
     context "removing from the 2nd position" do
+
       setup do
         @list2.destroy
         @container.reload
@@ -293,6 +319,7 @@ describe Mongoid::List do
     end
 
     context "removing from the 4th and last position" do
+
       setup do
         @list4.destroy
         @container.reload
@@ -303,9 +330,51 @@ describe Mongoid::List do
         assert_equal 2, @container.items.find(@list2.id).position
         assert_equal 3, @container.items.find(@list3.id).position
       end
+
     end
+
   end
 
+
+  context "#destroy Item from Deeply Embedded List" do
+
+    setup do
+      @container = Container.create
+      @list  = @container.items.create
+      @item1 = @list.items.create
+      @item2 = @list.items.create
+      @item3 = @list.items.create
+    end
+
+    context "from 1st position" do
+
+      setup do
+        @item1.destroy
+        @container.reload
+      end
+
+      should "have moved all other items up" do
+        assert_equal 1, @container.items.first.items.find(@item2.id).position
+        assert_equal 2, @container.items.first.items.find(@item3.id).position
+      end
+
+    end
+
+    context "from middle position" do
+
+      setup do
+        @item2.destroy
+        @container.reload
+      end
+
+      should "have moved last items up" do
+        assert_equal 1, @container.items.first.items.find(@item1.id).position
+        assert_equal 2, @container.items.first.items.find(@item3.id).position
+      end
+
+    end
+
+  end
 
 
   context "#list_scoped?" do
@@ -796,6 +865,5 @@ describe Mongoid::List do
     end
 
   end
-
 
 end
