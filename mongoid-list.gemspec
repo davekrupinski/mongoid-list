@@ -7,7 +7,7 @@ require "mongoid/list/version"
 Gem::Specification.new do |s|
   s.name          = 'mongoid-list'
   s.version       = Mongoid::List::VERSION
-  s.date          = '2011-10-28'
+  s.date          = '2012-02-06'
   s.authors       = [ 'Dave Krupinski' ]
   s.email         = 'dave@davekrupinski.com'
   s.summary       = 'Simple list behavior for Mongoid'
