@@ -1,5 +1,9 @@
 module Mongoid
 
+  Fields.option :scope do |model, field, value|
+
+  end
+
   module List
 
     extend ActiveSupport::Concern
@@ -18,7 +22,7 @@ module Mongoid
       before_destroy :mark_for_removal_processing_from_list
       after_destroy  :update_positions_in_list!, if: :_process_list_change
 
-      scope :ordered, order_by: :position.asc
+      scope :ordered, asc(:position)
     end
 
 

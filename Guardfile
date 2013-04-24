@@ -1,12 +1,8 @@
-guard 'spork' do
+guard 'spork', wait: 20 do
   watch('Gemfile')
-  watch('Gemfile.lock')
-  watch('test/test_helper.rb')
 end
 
-guard 'minitest' do
-  watch(%r|^test/test_(.*)\.rb|)
-  watch(%r|^test/(.*)_test\.rb|)
-  watch(%r|^lib/(.*)([^/]+)\.rb|)     { |m| "test/#{m[1]}test_#{m[2]}.rb" }
-  watch(%r|^test/test_helper\.rb|)    { "test" }
+guard :rspec, version: 2 do
+  watch('spec/spec_helper.rb')            { "spec" }
+  watch(%r{^spec/.+_spec\.rb})
 end
