@@ -116,6 +116,32 @@ describe Mongoid::List::Embedded do
       Container.create!
     end
 
+    context "with String Ids" do
+
+      let!(:obj1) { container.items.create! }
+      let!(:obj2) { container.items.create! }
+      let!(:obj3) { container.items.create! }
+
+      before do
+        container.items.update_positions_in_list!([ obj2.id.to_s, obj1.id.to_s, obj3.id.to_s ])
+      end
+
+      it "should change obj1 from :position of 1 to 2" do
+        obj1.position.should eq 1
+        obj1.reload.position.should eq 2
+      end
+
+      it "should change obj2 from :position of 2 to 1" do
+        obj2.position.should eq 2
+        obj2.reload.position.should eq 1
+      end
+
+      it "should not change obj3 from :position of 3" do
+        obj3.position.should eq 3
+        obj3.reload.position.should eq 3
+      end
+
+    end
     context "unscoped" do
 
       let!(:obj1) { container.items.create! }
