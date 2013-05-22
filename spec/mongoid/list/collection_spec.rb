@@ -82,6 +82,33 @@ describe Mongoid::List::Collection do
 
   describe "#update_positions_in_list!" do
 
+    context "string Ids" do
+
+      let!(:obj1) { Simple.create }
+      let!(:obj2) { Simple.create }
+      let!(:obj3) { Simple.create }
+
+      before do
+        Simple.update_positions_in_list!([obj2.id.to_s, obj1.id.to_s, obj3.id.to_s])
+      end
+
+      it "should change obj1 from :position of 1 to 2" do
+        obj1.position.should eq 1
+        obj1.reload.position.should eq 2
+      end
+
+      it "should change obj2 from :position of 2 to 1" do
+        obj2.position.should eq 2
+        obj2.reload.position.should eq 1
+      end
+
+      it "should not change obj3 from :position of 3" do
+        obj3.position.should eq 3
+        obj3.reload.position.should eq 3
+      end
+
+    end
+
     context "unscoped" do
 
       let!(:obj1) { Simple.create }
