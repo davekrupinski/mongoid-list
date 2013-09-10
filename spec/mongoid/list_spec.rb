@@ -740,27 +740,27 @@ describe Mongoid::List do
 
     context "on a Collection" do
 
-      let!(:obj1) { Simple.create }
-      let!(:obj2) { Simple.create }
-      let!(:obj3) { Simple.create }
+      let!(:doc1) { Simple.create }
+      let!(:doc2) { Simple.create }
+      let!(:doc3) { Simple.create }
 
       before do
-        Simple.update_positions_in_list!([obj2.id, obj1.id, obj3.id])
+        Simple.update_positions_in_list!([doc2.id, doc1.id, doc3.id])
       end
 
-      it "should change obj1 from :position of 1 to 2" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 2
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
       end
 
-      it "should change obj2 from :position of 2 to 1" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 1
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
       end
 
-      it "should not change obj3 from :position of 3" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 3
+      it "should not change doc3 from :position of 3" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 3
       end
 
     end
@@ -768,33 +768,33 @@ describe Mongoid::List do
     context "on an Embedded Collection" do
 
       let(:container) { Container.create! }
-      let!(:obj1) { container.items.create! }
-      let!(:obj2) { container.items.create! }
-      let!(:obj3) { container.items.create! }
-      let!(:obj4) { container.items.create! }
+      let!(:doc1) { container.items.create! }
+      let!(:doc2) { container.items.create! }
+      let!(:doc3) { container.items.create! }
+      let!(:doc4) { container.items.create! }
 
       before do
-        container.items.update_positions_in_list!([obj2.id, obj1.id, obj4.id, obj3.id])
+        container.items.update_positions_in_list!([doc2.id, doc1.id, doc4.id, doc3.id])
       end
 
-      it "should change obj1 from :position of 1 to 2" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 2
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
       end
 
-      it "should change obj2 from :position of 2 to 1" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 1
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
       end
 
-      it "should change obj3 from :position of 3 to 4" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 4
+      it "should change doc3 from :position of 3 to 4" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 4
       end
 
-      it "should change obj4 from :position of 4 to 3" do
-        obj4.position.should eq 4
-        obj4.reload.position.should eq 3
+      it "should change doc4 from :position of 4 to 3" do
+        doc4.position.should eq 4
+        doc4.reload.position.should eq 3
       end
     end
 
@@ -808,33 +808,33 @@ describe Mongoid::List do
         root.items.create!
       end
 
-      let!(:obj1) { embedded.items.create! }
-      let!(:obj2) { embedded.items.create! }
-      let!(:obj3) { embedded.items.create! }
-      let!(:obj4) { embedded.items.create! }
+      let!(:doc1) { embedded.items.create! }
+      let!(:doc2) { embedded.items.create! }
+      let!(:doc3) { embedded.items.create! }
+      let!(:doc4) { embedded.items.create! }
 
       before do
-        embedded.items.update_positions_in_list!([obj3.id, obj4.id, obj1.id, obj2.id])
+        embedded.items.update_positions_in_list!([doc3.id, doc4.id, doc1.id, doc2.id])
       end
 
-      it "should change obj1 from :position of 1 to 3" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 3
+      it "should change doc1 from :position of 1 to 3" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 3
       end
 
-      it "should change @obj2 from :position of 2 to 4" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 4
+      it "should change @doc2 from :position of 2 to 4" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 4
       end
 
-      it "should change @obj3 from :position of 3 to 1" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 1
+      it "should change @doc3 from :position of 3 to 1" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 1
       end
 
-      it "should change @obj4 from :position of 4 to 2" do
-        obj4.position.should eq 4
-        obj4.reload.position.should eq 2
+      it "should change @doc4 from :position of 4 to 2" do
+        doc4.position.should eq 4
+        doc4.reload.position.should eq 2
       end
 
     end

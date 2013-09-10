@@ -16,7 +16,7 @@ describe Mongoid::List::Embedded do
       Mongoid::List::Embedded.new(item)
     end
 
-    it "should assign item to :obj" do
+    it "should assign item to :doc" do
       embedded.obj.should eq item
     end
 
@@ -118,81 +118,81 @@ describe Mongoid::List::Embedded do
 
     context "with String Ids" do
 
-      let!(:obj1) { container.items.create! }
-      let!(:obj2) { container.items.create! }
-      let!(:obj3) { container.items.create! }
+      let!(:doc1) { container.items.create! }
+      let!(:doc2) { container.items.create! }
+      let!(:doc3) { container.items.create! }
 
       before do
-        container.items.update_positions_in_list!([ obj2.id.to_s, obj1.id.to_s, obj3.id.to_s ])
+        container.items.update_positions_in_list!([ doc2.id.to_s, doc1.id.to_s, doc3.id.to_s ])
       end
 
-      it "should change obj1 from :position of 1 to 2" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 2
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
       end
 
-      it "should change obj2 from :position of 2 to 1" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 1
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
       end
 
-      it "should not change obj3 from :position of 3" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 3
+      it "should not change doc3 from :position of 3" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 3
       end
 
     end
     context "unscoped" do
 
-      let!(:obj1) { container.items.create! }
-      let!(:obj2) { container.items.create! }
-      let!(:obj3) { container.items.create! }
+      let!(:doc1) { container.items.create! }
+      let!(:doc2) { container.items.create! }
+      let!(:doc3) { container.items.create! }
 
       before do
-        container.items.update_positions_in_list!([obj2.id, obj1.id, obj3.id])
+        container.items.update_positions_in_list!([doc2.id, doc1.id, doc3.id])
       end
 
-      it "should change obj1 from :position of 1 to 2" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 2
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
       end
 
-      it "should change obj2 from :position of 2 to 1" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 1
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
       end
 
-      it "should not change obj3 from :position of 3" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 3
+      it "should not change doc3 from :position of 3" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 3
       end
 
     end
 
     context "scoped" do
 
-      let!(:obj1) { container.scoped_items.create!(group: "hell's angels") }
-      let!(:obj2) { container.scoped_items.create!(group: "hell's angels") }
-      let!(:obj3) { container.scoped_items.create!(group: "hell's angels") }
+      let!(:doc1) { container.scoped_items.create!(group: "hell's angels") }
+      let!(:doc2) { container.scoped_items.create!(group: "hell's angels") }
+      let!(:doc3) { container.scoped_items.create!(group: "hell's angels") }
       let!(:other) { container.scoped_items.create!(group: "charlie's angels") }
 
       before do
-        container.scoped_items.update_positions_in_list!([obj3.id, obj2.id, obj1.id])
+        container.scoped_items.update_positions_in_list!([doc3.id, doc2.id, doc1.id])
       end
 
-      it "should change obj1 from :position of 1 to 3" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 3
+      it "should change doc1 from :position of 1 to 3" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 3
       end
 
-      it "should not change obj2 from :position of 2" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 2
+      it "should not change doc2 from :position of 2" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 2
       end
 
-      it "should change obj3 from :position of 3 to 1" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 1
+      it "should change doc3 from :position of 3 to 1" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 1
       end
 
       it "should not have touched other scoped" do
