@@ -12,7 +12,7 @@ describe Mongoid::List::Collection do
       Mongoid::List::Collection.new(simple)
     end
 
-    it "should assign simple to :obj" do
+    it "should assign simple to :doc" do
       collection.obj.should eq simple
     end
 
@@ -84,82 +84,109 @@ describe Mongoid::List::Collection do
 
     context "string Ids" do
 
-      let!(:obj1) { Simple.create }
-      let!(:obj2) { Simple.create }
-      let!(:obj3) { Simple.create }
+      let!(:doc1) { Simple.create }
+      let!(:doc2) { Simple.create }
+      let!(:doc3) { Simple.create }
 
       before do
-        Simple.update_positions_in_list!([obj2.id.to_s, obj1.id.to_s, obj3.id.to_s])
+        Simple.update_positions_in_list!([doc2.id.to_s, doc1.id.to_s, doc3.id.to_s])
       end
 
-      it "should change obj1 from :position of 1 to 2" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 2
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
       end
 
-      it "should change obj2 from :position of 2 to 1" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 1
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
       end
 
-      it "should not change obj3 from :position of 3" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 3
+      it "should not change doc3 from :position of 3" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 3
+      end
+
+    end
+
+    context "string Ids for class using custom Ids" do
+
+      let!(:doc1) { Custom.create(slug: "one") }
+      let!(:doc2) { Custom.create(slug: "two") }
+      let!(:doc3) { Custom.create(slug: "three") }
+
+      before do
+        Custom.update_positions_in_list!([ "two", "one", "three" ])
+      end
+
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
+      end
+
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
+      end
+
+      it "should not change doc3 from :position of 3" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 3
       end
 
     end
 
     context "unscoped" do
 
-      let!(:obj1) { Simple.create }
-      let!(:obj2) { Simple.create }
-      let!(:obj3) { Simple.create }
+      let!(:doc1) { Simple.create }
+      let!(:doc2) { Simple.create }
+      let!(:doc3) { Simple.create }
 
       before do
-        Simple.update_positions_in_list!([obj2.id, obj1.id, obj3.id])
+        Simple.update_positions_in_list!([doc2.id, doc1.id, doc3.id])
       end
 
-      it "should change obj1 from :position of 1 to 2" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 2
+      it "should change doc1 from :position of 1 to 2" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 2
       end
 
-      it "should change obj2 from :position of 2 to 1" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 1
+      it "should change doc2 from :position of 2 to 1" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 1
       end
 
-      it "should not change obj3 from :position of 3" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 3
+      it "should not change doc3 from :position of 3" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 3
       end
 
     end
 
     context "scoped" do
 
-      let!(:obj1) { Scoped.create(group: "hell's angels") }
-      let!(:obj2) { Scoped.create(group: "hell's angels") }
-      let!(:obj3) { Scoped.create(group: "hell's angels") }
+      let!(:doc1) { Scoped.create(group: "hell's angels") }
+      let!(:doc2) { Scoped.create(group: "hell's angels") }
+      let!(:doc3) { Scoped.create(group: "hell's angels") }
       let!(:other) { Scoped.create(group: "charlie's angels") }
 
       before do
-        Scoped.update_positions_in_list!([obj3.id, obj2.id, obj1.id])
+        Scoped.update_positions_in_list!([doc3.id, doc2.id, doc1.id])
       end
 
-      it "should change obj1 from :position of 1 to 3" do
-        obj1.position.should eq 1
-        obj1.reload.position.should eq 3
+      it "should change doc1 from :position of 1 to 3" do
+        doc1.position.should eq 1
+        doc1.reload.position.should eq 3
       end
 
-      it "should not change obj2 from :position of 2" do
-        obj2.position.should eq 2
-        obj2.reload.position.should eq 2
+      it "should not change doc2 from :position of 2" do
+        doc2.position.should eq 2
+        doc2.reload.position.should eq 2
       end
 
-      it "should change obj3 from :position of 3 to 1" do
-        obj3.position.should eq 3
-        obj3.reload.position.should eq 1
+      it "should change doc3 from :position of 3 to 1" do
+        doc3.position.should eq 3
+        doc3.reload.position.should eq 1
       end
 
       it "should not have touched other scoped" do

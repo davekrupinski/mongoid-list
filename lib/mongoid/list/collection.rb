@@ -9,7 +9,9 @@ module Mongoid
         def update_positions!(klass, elements)
           elements.each_with_index do |element, idx|
             id = element.kind_of?(Hash) ? element['id'] : element
-            id = Moped::BSON::ObjectId.from_string(id) if id.is_a?(String)
+            if klass.using_object_ids?
+              id = Moped::BSON::ObjectId.from_string(id) if id.is_a?(String)
+            end
             klass.collection.find({ _id: id }).update({ '$set' => { position: (idx + 1) } })
           end
         end
