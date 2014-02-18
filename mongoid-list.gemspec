@@ -17,13 +17,13 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency('mongoid', [ '>= 3.1.0' ])
+  s.add_dependency('mongoid', [ '4.0.0.beta1' ])
 
-  s.add_development_dependency('rspec', [ '>= 2.13.0' ])
-  s.add_development_dependency('guard', [ '>= 1.8.0' ])
-  s.add_development_dependency('guard-rspec', [ '>= 2.5.0' ])
+  s.add_development_dependency('rspec', [ '>= 2.l4.0' ])
+  s.add_development_dependency('guard', [ '>= 2.4.0' ])
+  s.add_development_dependency('guard-rspec', [ '>= 4.2.0' ])
   s.add_development_dependency('guard-spork', [ '>= 1.5.0' ])
-  s.add_development_dependency('listen', [ '>= 1.1.0' ])
-  s.add_development_dependency('database_cleaner', [ '~> 1.0.0 ' ])
+  s.add_development_dependency('listen', [ '>= 2.5.0' ])
+  s.add_development_dependency('database_cleaner', [ '~> 1.2.0' ])
 
 end
