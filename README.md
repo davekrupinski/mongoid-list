@@ -23,7 +23,6 @@ class CrowTRobot
   include Mongoid::List
 
   field :title
-  slug :title
 end
 ```
 
