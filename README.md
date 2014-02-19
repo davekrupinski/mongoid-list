@@ -66,7 +66,7 @@ To scope the list, pass `:scope` on field definition:
 ```ruby
 class TomServo
   include Mongoid::Document
-  include Mongoid::Slug
+  include Mongoid::List
 
   field :position, type: Integer, scope: :satellite_of_love_id
   belongs_to :satellite_of_love
