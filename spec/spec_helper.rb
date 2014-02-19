@@ -18,6 +18,8 @@ Spork.prefork do
 
   RSpec.configure do |config|
 
+    config.color_enabled = true
+
     config.before(:suite) do
       Mongoid.load!("mongoid.yml", :test)
       DatabaseCleaner[:mongoid].strategy = :truncation

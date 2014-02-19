@@ -44,7 +44,7 @@ module Mongoid
 
 
       def items
-        container.send(relation_name)
+        container.send(obj.metadata_name)
       end
 
       def should_operate_on_item?(item)
@@ -60,13 +60,12 @@ module Mongoid
       def container
         # TODO: MONGOID: Mongoid is not currently setting up the metadata properly so we have to do some extra
         # work with getting the values we need out of the partial information.
-        obj.send(obj.metadata.inverse_setter.sub('=', '').to_sym)
+        if obj.respond_to?(:container)
+          obj.container
+        else
+          obj.send(obj.__metadata.inverse_setter.sub('=', '').to_sym)
+        end
       end
-
-      def relation_name
-        obj.metadata.name.to_sym
-      end
-
 
     end
   end

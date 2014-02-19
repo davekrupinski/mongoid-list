@@ -22,7 +22,7 @@ module Mongoid
       before_destroy :mark_for_removal_processing_from_list
       after_destroy  :update_positions_in_list!, if: :_process_list_change
 
-      scope :ordered, asc(:position)
+      scope :ordered, -> { asc(:position) }
     end
 
 
