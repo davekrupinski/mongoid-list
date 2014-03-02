@@ -448,6 +448,19 @@ describe Mongoid::List do
   end
 
 
+  describe "#list_scope_changing_conditions" do
+
+    subject { Scoped.new }
+
+    it "uses value in :_scope_list_update_to_previous" do
+      subject._scope_list_update_to_previous = "this-is-something-eh"
+      subject.list_scope_changing_conditions.should eq \
+        ({ group: "this-is-something-eh" })
+    end
+
+  end
+
+
   describe "#list_scope_changing?" do
 
     context "when unscoped" do

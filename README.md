@@ -22,7 +22,8 @@ class CrowTRobot
   include Mongoid::Document
   include Mongoid::List
 
-  field :title
+  lists
+
 end
 ```
 
@@ -60,14 +61,14 @@ doc.list_scope_conditions	# Additional query conditions for scoped lists.
 Scoping
 -------
 
-To scope the list, pass `:scope` on field definition:
+To scope the list, pass `:scope` on lists definition:
 
 ```ruby
 class TomServo
   include Mongoid::Document
   include Mongoid::List
 
-  field :position, type: Integer, scope: :satellite_of_love_id
+  lists scope: :satellite_of_love_id
   belongs_to :satellite_of_love
 
 end

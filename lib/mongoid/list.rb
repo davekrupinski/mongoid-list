@@ -74,7 +74,6 @@ module Mongoid
       list_scoped? ? { list_scope_field.to_sym => list_scope_value } : {}
     end
 
-    # TODO: test
     def list_scope_changing_conditions
       { list_scope_field.to_sym => _scope_list_update_to_previous }
     end
