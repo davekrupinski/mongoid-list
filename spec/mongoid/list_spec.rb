@@ -718,11 +718,31 @@ describe Mongoid::List do
     end
 
     context "missing Scope" do
-      pending
+
+      let!(:doc1) { Scoped.create(group: 1) }
+      let!(:doc2) { Scoped.create(group: 1) }
+      let!(:doc3) { Scoped.create() }
+
+      specify "initial positions" do
+        doc1.position.should eq 1
+        doc2.position.should eq 2
+        doc3.position.should eq 1
+      end
+
     end
 
     context "removing Scope" do
-      pending
+
+      let!(:doc1) { Scoped.create(group: 1) }
+      let!(:doc2) { Scoped.create(group: 1) }
+      let!(:doc3) { Scoped.create() }
+
+      it "moves to null scope" do
+        lambda { doc1.update_attributes(group: nil); doc1.reload }.should change(doc1, :position).from(1).to(2)
+        lambda { doc1.update_attributes(group: nil); doc2.reload }.should change(doc2, :position).from(2).to(1)
+        lambda { doc1.update_attributes(group: nil); doc3.reload }.should_not change(doc3, :position)
+      end
+
     end
 
   end

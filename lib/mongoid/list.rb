@@ -45,9 +45,7 @@ module Mongoid
           self.mongoid_list_settings[:scope]  = opts[:scope]
         end
 
-        unless opts.has_key?(:required) && !opts[:required]
-          validates :position, numericality: true, on: :update
-        end
+        validates :position, numericality: true, on: :update
       end
 
       def update_positions_in_list!(elements, binding=nil)
@@ -61,7 +59,6 @@ module Mongoid
 
 
     def list_scoped?
-      # fields["position"].options.has_key?(:scope)
       self.class.mongoid_list_settings[:scoped]
     end
 
