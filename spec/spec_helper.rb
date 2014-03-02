@@ -20,6 +20,9 @@ Spork.prefork do
 
     config.color_enabled = true
 
+    config.filter_run focus: true
+    config.run_all_when_everything_filtered = true
+
     config.before(:suite) do
       Mongoid.load!("mongoid.yml", :test)
       DatabaseCleaner[:mongoid].strategy = :truncation

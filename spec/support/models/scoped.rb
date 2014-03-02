@@ -4,6 +4,6 @@ class Scoped
   include Mongoid::List
 
   field :group, type: String
-  field :position, type: Integer, scope: :group
+  lists scope: :group
 
 end

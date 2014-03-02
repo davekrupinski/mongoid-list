@@ -14,7 +14,11 @@ module Mongoid
 
 
       def conditions
-        obj.list_scope_conditions
+        if obj._scope_list_update_to_previous
+          obj.list_scope_changing_conditions
+        else
+          obj.list_scope_conditions
+        end
       end
 
     end

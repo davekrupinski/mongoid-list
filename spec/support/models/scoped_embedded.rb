@@ -6,6 +6,8 @@ class ScopedEmbedded
   embedded_in :container
 
   field :group, type: String
-  field :position, type: Integer, scope: :group
+  # field :position, type: Integer, scope: :group
+
+  lists scope: :group
 
 end

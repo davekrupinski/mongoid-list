@@ -448,8 +448,38 @@ describe Mongoid::List do
   end
 
 
-  describe "Initializing in multiple scopes" do
+  describe "#list_scope_changing?" do
 
+    context "when unscoped" do
+
+      subject { Simple.create }
+      specify { subject.list_scope_changing?.should be_false }
+
+    end
+
+    context "when Scoped" do
+
+      subject { Scoped.create(group: "A") }
+
+      context "but no change to :group" do
+
+        specify { subject.list_scope_changing?.should be_false }
+
+      end
+
+      context "with change to :group" do
+
+        before  { subject.group = "B" }
+        specify { subject.list_scope_changing?.should be_true }
+
+      end
+
+    end
+
+  end
+
+
+  describe "Initializing in multiple scopes" do
 
     context "on a Collection" do
 
@@ -649,6 +679,50 @@ describe Mongoid::List do
 
       end
 
+    end
+
+    context "changing Scope" do
+
+      let!(:group1_1) { Scoped.create(group: 1) }
+      let!(:group1_2) { Scoped.create(group: 1) }
+      let!(:group2_1) { Scoped.create(group: 2) }
+      let!(:group2_2) { Scoped.create(group: 2) }
+      let!(:group2_3) { Scoped.create(group: 2) }
+
+      before do
+        lambda {
+          group2_2.update_attributes(group: 1)
+        }.should change(group2_2, :position).from(2).to(3)
+      end
+
+      specify "@group1_1 :position is unchanged" do
+        group1_1.position.should eq 1
+        group1_1.reload.position.should eq 1
+      end
+
+      specify "@group1_2 :position is unchanged" do
+        group1_2.position.should eq 2
+        group1_2.reload.position.should eq 2
+      end
+
+      specify "@group2_1 :position is unchanged" do
+        group2_1.position.should eq 1
+        group2_1.reload.position.should eq 1
+      end
+
+      specify "@group2_3 :position changes to 2" do
+        group2_3.position.should eq 3
+        group2_3.reload.position.should eq 2
+      end
+
+    end
+
+    context "missing Scope" do
+      pending
+    end
+
+    context "removing Scope" do
+      pending
     end
 
   end
