@@ -7,12 +7,19 @@ module Mongoid
       class << self
 
         def update_positions!(binding, elements)
+          root_doc = binding_root(binding)
           load_list_elements(binding, elements).each_with_index do |element, idx|
-            (binding.base._parent || binding.base).collection.find(element.atomic_selector).update(
-              { "$set" => { "#{element.atomic_path}.$.position" => (idx+1) } }
+            # element.set(position: idx+1)
+            root_doc.collection.find(element.atomic_selector).update(
+              { "$set" => { "#{element.atomic_position}.position" => (idx+1) } }
             )
           end
         end
+
+        def binding_root(binding)
+          binding.base._parent || binding.base
+        end
+
 
       private
 
@@ -27,10 +34,10 @@ module Mongoid
 
 
       def update_positions!
-        items.each do |item|
+        items.each_with_index do |item, idx|
           next unless should_operate_on_item?(item)
           criteria  = item.atomic_selector
-          updates   = { '$inc' => { "#{item.atomic_path}.$.position" => changes[:by] } }
+          updates   = { '$inc' => { "#{item.atomic_path}.#{idx}.position" => changes[:by] } }
           item._root.class.collection.find(criteria).update(updates)
         end
       end

@@ -2,6 +2,41 @@ require "spec_helper"
 
 describe Mongoid::List::Embedded do
 
+  describe ".binding_root" do
+
+    subject do
+      Mongoid::List::Embedded
+    end
+
+    let(:root) do
+      Container.create!
+    end
+
+    let(:embedded) do
+      root.items.create!
+    end
+
+    context "w/ Child Embed" do
+
+      it "returns @root" do
+        expect(subject.binding_root(root.items)).to eq root
+      end
+
+    end
+
+    context "w/ Deeply Embedded" do
+
+      let!(:deeply_embedded) { embedded.items.create! }
+
+      it "returns @root" do
+        expect(subject.binding_root(embedded.items)).to eq root
+      end
+
+    end
+
+  end
+
+
   describe "#initialization" do
 
     let(:container) do

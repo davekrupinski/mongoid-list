@@ -376,8 +376,8 @@ describe Mongoid::List do
       end
 
       it "should have moved last items up" do
-        container.items.first.items.find(item1.id).position.should eq 1
-        container.items.first.items.find(item3.id).position.should eq 2
+        expect(item1.reload.position).to eq 1
+        expect(item3.reload.position).to eq 2
       end
 
     end
@@ -466,7 +466,7 @@ describe Mongoid::List do
     context "when unscoped" do
 
       subject { Simple.create }
-      specify { subject.list_scope_changing?.should be_false }
+      specify { subject.list_scope_changing?.should be_falsey }
 
     end
 
@@ -476,14 +476,14 @@ describe Mongoid::List do
 
       context "but no change to :group" do
 
-        specify { subject.list_scope_changing?.should be_false }
+        specify { subject.list_scope_changing?.should be_falsey }
 
       end
 
       context "with change to :group" do
 
         before  { subject.group = "B" }
-        specify { subject.list_scope_changing?.should be_true }
+        specify { subject.list_scope_changing?.should be_truthy }
 
       end
 
@@ -856,18 +856,18 @@ describe Mongoid::List do
       end
 
       it "should change doc1 from :position of 1 to 2" do
-        doc1.position.should eq 1
-        doc1.reload.position.should eq 2
+        expect(doc1.position).to eq 1
+        expect(doc1.reload.position).to eq 2
       end
 
       it "should change doc2 from :position of 2 to 1" do
-        doc2.position.should eq 2
-        doc2.reload.position.should eq 1
+        expect(doc2.position).to eq 2
+        expect(doc2.reload.position).to eq 1
       end
 
       it "should not change doc3 from :position of 3" do
-        doc3.position.should eq 3
-        doc3.reload.position.should eq 3
+        expect(doc3.position).to eq 3
+        expect(doc3.reload.position).to eq 3
       end
 
     end
@@ -885,24 +885,25 @@ describe Mongoid::List do
       end
 
       it "should change doc1 from :position of 1 to 2" do
-        doc1.position.should eq 1
-        doc1.reload.position.should eq 2
+        expect(doc1.position).to eq 1
+        expect(doc1.reload.position).to eq 2
       end
 
       it "should change doc2 from :position of 2 to 1" do
-        doc2.position.should eq 2
-        doc2.reload.position.should eq 1
+        expect(doc2.position).to eq 2
+        expect(doc2.reload.position).to eq 1
       end
 
       it "should change doc3 from :position of 3 to 4" do
-        doc3.position.should eq 3
-        doc3.reload.position.should eq 4
+        expect(doc3.position).to eq 3
+        expect(doc3.reload.position).to eq 4
       end
 
       it "should change doc4 from :position of 4 to 3" do
-        doc4.position.should eq 4
-        doc4.reload.position.should eq 3
+        expect(doc4.position).to eq 4
+        expect(doc4.reload.position).to eq 3
       end
+
     end
 
     context "on a Deeply Embedded Collection" do
@@ -925,23 +926,23 @@ describe Mongoid::List do
       end
 
       it "should change doc1 from :position of 1 to 3" do
-        doc1.position.should eq 1
-        doc1.reload.position.should eq 3
+        expect(doc1.position).to eq 1
+        expect(doc1.reload.position).to eq 3
       end
 
       it "should change @doc2 from :position of 2 to 4" do
-        doc2.position.should eq 2
-        doc2.reload.position.should eq 4
+        expect(doc2.position).to eq 2
+        expect(doc2.reload.position).to eq 4
       end
 
       it "should change @doc3 from :position of 3 to 1" do
-        doc3.position.should eq 3
-        doc3.reload.position.should eq 1
+        expect(doc3.position).to eq 3
+        expect(doc3.reload.position).to eq 1
       end
 
       it "should change @doc4 from :position of 4 to 2" do
-        doc4.position.should eq 4
-        doc4.reload.position.should eq 2
+        expect(doc4.position).to eq 4
+        expect(doc4.reload.position).to eq 2
       end
 
     end
