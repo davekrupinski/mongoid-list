@@ -12,7 +12,6 @@ Spork.prefork do
   require 'rspec'
   require 'mongoid'
   require 'mongoid-list'
-  require 'database_cleaner'
 
   Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
@@ -23,11 +22,12 @@ Spork.prefork do
 
     config.before(:suite) do
       Mongoid.load!("mongoid.yml", :test)
-      DatabaseCleaner[:mongoid].strategy = :truncation
     end
 
     config.after(:each) do
-      DatabaseCleaner.clean
+      Mongoid.client(:default).database.collections.each do |collection|
+        collection.drop
+      end
     end
 
   end

@@ -10,7 +10,7 @@ module Mongoid
           root_doc = binding_root(binding)
           load_list_elements(binding, elements).each_with_index do |element, idx|
             # element.set(position: idx+1)
-            root_doc.collection.find(element.atomic_selector).update(
+            root_doc.collection.find_one_and_update(element.atomic_selector,
               { "$set" => { "#{element.atomic_position}.position" => (idx+1) } }
             )
           end
@@ -38,7 +38,7 @@ module Mongoid
           next unless should_operate_on_item?(item)
           criteria  = item.atomic_selector
           updates   = { '$inc' => { "#{item.atomic_path}.#{idx}.position" => changes[:by] } }
-          item._root.class.collection.find(criteria).update(updates)
+          item._root.class.collection.find_one_and_update(criteria, updates)
         end
       end
 

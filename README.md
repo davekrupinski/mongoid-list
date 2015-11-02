@@ -3,6 +3,8 @@ Mongoid List
 
 Mongoid List uses a position column to maintain an ordered list, with optional scoping.  It uses atomic updates to keep lists in either a Collection or Embedded in sync.
 
+Starting with version 0.7.0, Mongoid 5+ is required. If you want Mongoid 4 support use the 0.6.0 version of this gem.
+
 Installation
 ------------
 

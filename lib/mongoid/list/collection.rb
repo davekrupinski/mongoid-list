@@ -12,7 +12,7 @@ module Mongoid
             if klass.using_object_ids?
               id = BSON::ObjectId.from_string(id) if id.is_a?(String)
             end
-            klass.collection.find({ _id: id }).update({ '$set' => { position: (idx + 1) } })
+            klass.collection.find_one_and_update({ _id: id }, { '$set' => { position: (idx + 1) } })
           end
         end
 
@@ -20,7 +20,7 @@ module Mongoid
 
 
       def update_positions!
-        obj.class.collection.find(criteria).update_all(
+        obj.class.collection.find(criteria).update_many(
           { '$inc' => { position: changes[:by] } }
         )
       end
